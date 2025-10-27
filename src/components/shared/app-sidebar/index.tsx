@@ -1,36 +1,31 @@
-import { Icon } from "lucide-react"
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from "@/components/ui/sidebar"
 import { ComponentProps } from "react"
 import Link from "next/link"
+import Logo from "@/assets/logo.svg"
+import LogoIcon from "@/assets/logo-icon.svg"
+import { NavItems } from "./nav-items"
+import { NavUser } from "./nav-user"
 
 type AppSidebarProps = ComponentProps<typeof Sidebar>
 
 export type { AppSidebarProps }
 
-export const AppSidebar = ({...props}: AppSidebarProps) => { 
+export const AppSidebar = ({ ...props }: AppSidebarProps) => {
     return (
         <Sidebar collapsible="icon" {...props} >
-            <SidebarHeader className="py-4"> 
+            <SidebarHeader className="py-4">
                 <Link href="/" >
-                    <p>LOGO</p>
+                    <Logo className="w-full max-w-[150px] mx-auto pt-3 sm:hidden group-data-[state=expanded]:block" />
+                    <LogoIcon className="w-full max-w-5 mx-auto pt-3 hidden group-data-[state=collapsed]:block" />
                 </Link>
             </SidebarHeader>
             <SidebarContent>
-                <nav>
-                    <ul>
-                        <li>
-                            <Link href="/dashboard">Dashboard</Link>
-                        </li>
-                        <li>
-                            <Link href="/settings">Settings</Link>
-                        </li>
-                    </ul>
-                </nav>
+                <NavItems />
             </SidebarContent>
             <SidebarFooter>
-                <p>© 2024 Codelab</p>
+                <NavUser />
             </SidebarFooter>
-            <SidebarRail/>
+            <SidebarRail />
         </Sidebar>
     );
 }
