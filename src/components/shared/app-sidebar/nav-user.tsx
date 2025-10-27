@@ -1,20 +1,94 @@
+"use client";
+
+import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { SidebarMenu, SidebarMenuItem } from "@/components/ui/sidebar"
-import { LogIn, Sidebar } from "lucide-react"
+import { DropdownMenu, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
+import { Skeleton } from "@/components/ui/skeleton";
+import { useClerk, useUser } from "@clerk/nextjs";
+import { DropdownMenuContent, DropdownMenuGroup, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import { BadgeCheck, ChevronsUpDown, LogIn, LogOut, Sidebar } from "lucide-react"
 import Link from "next/link";
 
 export const NavUser = () => {
+    const { user, isLoaded } = useUser();
+    const { openUserProfile, signOut } = useClerk();
+    const { isMobile } = useSidebar();
+
     return (
         <SidebarMenu>
             <SidebarMenuItem>
-                <div className="p-2">
-                    <Link href="/auth/sign-in" passHref className="w-full">
-                        <Button size="sm" variant="outline" className="w-full">
-                            <LogIn />
-                            Entrar
-                        </Button>
-                    </Link>
-                </div>
+                {user ? (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <SidebarMenuButton
+                                size="lg"
+                                className="data-[stage=open]:bg-sidebar-accent data-[stage=open]:text-sidebar-accent-foreground"
+                            >
+                                <Avatar src={user?.imageUrl} fallback={user?.fullName} />
+                                <div className="grid flex-1 text-left text-sm leading-tight">
+                                    <span className="truncate font-semibold">
+                                        {user.fullName}
+                                    </span>
+                                    <span className="truncate text-xs">
+                                        {user.primaryEmailAddress?.emailAddress}
+                                    </span>
+                                </div>
+                                <ChevronsUpDown className="ml-auto size-4" />
+                            </SidebarMenuButton>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                            className="w-[var(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                            side={isMobile ? "bottom" : "right"}
+                            align="end"
+                            sideOffset={4}
+                        >
+                            <DropdownMenuLabel className="p-0 font-normal">
+                                <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                                    <Avatar src={user?.imageUrl} fallback={user?.fullName} />
+                                    <div className="grid flex-1 text-left text-sm leading-tight">
+                                        <span className="truncate font-semibold">
+                                            {user.fullName}
+                                        </span>
+                                        <span className="truncate text-xs">
+                                            {user.primaryEmailAddress?.emailAddress}
+                                        </span>
+                                    </div>
+                                </div>
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+
+                            <DropdownMenuGroup>
+                                <DropdownMenuItem onClick={() => openUserProfile()}>
+                                    <BadgeCheck />
+                                    Account Management
+                                </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuGroup>
+                                <DropdownMenuItem onClick={() => signOut()}>
+                                    <LogOut />
+                                    LogOut
+                                </DropdownMenuItem>
+                            </DropdownMenuGroup>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                ) : (
+                    <>
+                        {!isLoaded ? (
+                            <Skeleton />
+                        ) : (
+                            <div className="p-2">
+                                <Link href="/auth/sign-in" passHref className="w-full">
+                                    <Button size="sm" variant="outline" className="w-full">
+                                        <LogIn />
+                                        Entrar
+                                    </Button>
+                                </Link>
+                            </div>
+                        )}
+                    </>
+                )}
             </SidebarMenuItem>
         </SidebarMenu>
     );
